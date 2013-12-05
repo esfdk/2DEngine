@@ -2,11 +2,28 @@
 #define PLAYER_H
 
 #include <SDL.h>
+#include "../include/Window.h"
+#include "../include/map.h"
+#include "../include/EngineSettings.h"
+#include "../include/Enemy.h"
 /**
 	The player character.
 */
 class Player{
 public:
+	#pragma region Player variables
+	//Textures
+	#define PLAYER_STAND_TEXTURE "Textures/PlayerStandLeft.png"
+	#define PLAYER_JUMP_TEXTURE "Textures/PlayerJump.png"
+	#define PLAYER_RUN_TEXTURE "Textures/PlayerRunning.png"
+	#define PLAYER_RUN_CLIP_COUNT 10
+
+	/**
+		The speed the player moves with.
+	*/
+	#define PLAYER_SPEED 7
+	#pragma endregion
+
 #pragma region Constructors
 	/**
 		Starts player at x = 300, y = 300.
@@ -48,9 +65,14 @@ public:
 	SDL_Rect currentClip();
 
 	/**
+	* Moves the player.
+	*/
+	void move(Map map, Enemy **enemyList, int numberOfEnemies);
+
+	/**
 		The size of the player texture.
 		*/
-	int playerTextureHeight, playerTextureWidth;
+	int textureHeight, textureWidth;
 
 	/**
 		Increases clip counter by 1.
@@ -70,9 +92,14 @@ public:
 	int moveState;
 
 	/**
-		Indicates if the player is in the air.
+		Indicates if the player is jumping.
 	*/
-	bool inAir;
+	bool isJumping;
+
+	/**
+	* Indicates if the player is able to jump.
+	*/
+	bool canJump;
 
 	/**
 		The position of the player.
@@ -87,7 +114,7 @@ public:
 	/**
 		Points to check for collision with player.
 	*/
-	SDL_Point collisionPoints[9];
+	SDL_Point collisionPoints[COLLISION_POINT_AMOUNT];
 
 	/**
 		If player can jump, then y velocity is set to 200 and inAir = true.
@@ -132,6 +159,11 @@ private:
 		Current running clip
 	*/
 	int currentRunClip;
+
+	/**
+	* Checks for collision.
+	*/
+	bool Player::checkCollision(Map map, Enemy **enemyList, int numberOfEnemies);
 	#pragma endregion
 };
 #endif

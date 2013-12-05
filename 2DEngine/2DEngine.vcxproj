@@ -11,21 +11,27 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\Enemy.h" />
+    <ClInclude Include="include\enemyTypes.h" />
+    <ClInclude Include="include\EngineSettings.h" />
     <ClInclude Include="include\game.h" />
+    <ClInclude Include="include\helperClass.h" />
     <ClInclude Include="include\map.h" />
     <ClInclude Include="include\player.h" />
     <ClInclude Include="include\window.h" />
-    <ClInclude Include="include\xMonster.h" />
-    <ClInclude Include="include\yMonster.h" />
+    <ClInclude Include="include\Demon.h" />
+    <ClInclude Include="include\copter.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Enemy.cpp" />
     <ClCompile Include="src\Game.cpp" />
+    <ClCompile Include="src\helperClass.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\map.cpp" />
     <ClCompile Include="src\player.cpp" />
     <ClCompile Include="src\window.cpp" />
-    <ClCompile Include="src\xMonster.cpp" />
-    <ClCompile Include="src\yMonster.cpp" />
+    <ClCompile Include="src\Demon.cpp" />
+    <ClCompile Include="src\copter.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{ED7975F0-A025-4FCA-AC1D-785119FDFC41}</ProjectGuid>
@@ -68,7 +74,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>C:\SDL\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_TTF.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
     </Link>
     <Bscmake>
       <PreserveSbr>true</PreserveSbr>

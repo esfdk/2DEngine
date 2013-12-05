@@ -4,13 +4,7 @@
 #include <iostream>
 #include <list>
 #include <SDL.h>
-
 #include "../include/game.h"
-#include "../include/window.h"
-#include "../include/player.h"
-#include "../include/xMonster.h"
-#include "../include/yMonster.h"
-#include "../include/map.h"
 
 using namespace std;
 
@@ -19,7 +13,7 @@ using namespace std;
 */
 int Game::init(){
 	try {
-		Window::Init("2D platformer");
+		Window::Init(GAME_NAME);
 	}
 	catch (const std::runtime_error &e){
 		std::cout << e.what() << std::endl;
@@ -28,25 +22,21 @@ int Game::init(){
 	}
 	
 	//Textures
-	bricks = Window::LoadImage("Textures/RedBlock.png");
-	stoneBlock = Window::LoadImage("Textures/GreyBlock.png");
+	solidBlockTexture = Window::LoadImage(SOLID_BLOCK_TEXTURE);
+	goalTexture = Window::LoadImage(GOAL_BLOCK_TEXTURE);
 
 	map = Map(MAP_TO_LOAD);
 
 	player = Player(map.getPlayerSpawn().x, map.getPlayerSpawn().y);
 
-	loadMonsters();
+	loadEnemies();
 
-	winEvent.type = SDL_USEREVENT;
-	winEvent.user.code = WIN_EVENT_CODE;
-	winEvent.user.data1 = 0;
-	winEvent.user.data2 = 0;
+	HelperClass::winEvent.type = SDL_USEREVENT;
+	HelperClass::winEvent.user.code = WIN_EVENT_CODE;
 
-	lossEvent.type = SDL_USEREVENT;
-	lossEvent.user.code = LOSS_EVENT_CODE;
-	lossEvent.user.data1 = 0;
-	lossEvent.user.data2 = 0;
-
+	HelperClass::lossEvent.type = SDL_USEREVENT;
+	HelperClass::lossEvent.user.code = LOSS_EVENT_CODE;
+	
 	gameLoop();
 
 	return 0;
@@ -61,8 +51,8 @@ void Game::gameLoop(){
 	bool showVictoryScreen = false;
 	bool showLossScreen = false;
 
-	while (!quit){
-
+	while (!quit)
+	{
 		//// Event Polling
 		while (SDL_PollEvent(&e))
 		{
@@ -76,13 +66,10 @@ void Game::gameLoop(){
 
 			if (e.type == SDL_USEREVENT){
 				if (e.user.code == WIN_EVENT_CODE){
-					quit = true;
 					showVictoryScreen = true;
-					break;
 				}
 
 				if (e.user.code == LOSS_EVENT_CODE){
-					quit = true;
 					showLossScreen = true;
 				}
 			}
@@ -90,81 +77,102 @@ void Game::gameLoop(){
 			horizontalKeyPressed = 0;
 			verticalKeyPressed = 0;
 
-			if (keyboardState[SDL_SCANCODE_D]){
-				player.accelerateX();
-				player.moveState = MOVE_RIGHT;
-				horizontalKeyPressed = SDLK_d;
-			}
-			if (keyboardState[SDL_SCANCODE_A]){
-				player.accelerateX();
-				player.moveState = MOVE_LEFT;
-				horizontalKeyPressed = SDLK_a;
-			}
-			if (keyboardState[SDL_SCANCODE_W]){
-				player.accelerateY();
-				verticalKeyPressed = SDLK_w;
-			}
-			if (keyboardState[SDL_SCANCODE_ESCAPE]){
+			if (keyboardState[SDL_SCANCODE_ESCAPE])
+			{
 				quit = true;
 			}
+
+			if (showVictoryScreen || showLossScreen)
+			{
+				if (keyboardState[SDL_SCANCODE_SPACE])
+				{
+					endGame();
+				}
+			}
+			else
+			{
+				if (keyboardState[SDL_SCANCODE_D])
+				{
+					player.accelerateX();
+					player.moveState = MOVE_RIGHT;
+					horizontalKeyPressed = SDLK_d;
+				}
+				if (keyboardState[SDL_SCANCODE_A])
+				{
+					player.accelerateX();
+					player.moveState = MOVE_LEFT;
+					horizontalKeyPressed = SDLK_a;
+				}
+				if (keyboardState[SDL_SCANCODE_W])
+				{
+					player.accelerateY();
+					verticalKeyPressed = SDLK_w;
+				}
+			}
 		}
 
-		updatePlayer();
-		updateEnemies();
+		if (showVictoryScreen)
+		{
+			Window::Clear();
+			HelperClass::drawWinScreen();
+			Window::Present();
+		}
+		else if (showLossScreen)
+		{
+			Window::Clear();
+			HelperClass::drawLossScreen();
+			Window::Present();
+		}
+		else
+		{
+			updatePlayer();
+			updateEnemies();
 
-		Window::Clear();
-		drawLevel();
-		drawPlayer();
-		drawEnemies();
-		Window::Present();
+			Window::Clear();
+			drawLevel();
+			drawPlayer();
+			drawEnemies();
+			Window::Present();
+		}
     }
 
-	while (showVictoryScreen)
-	{
-		while (SDL_PollEvent(&e))
-		{
-			// Update keyboardState
-			SDL_PumpEvents();
+	endGame();
+}
 
-			// If user closes the window
-			if (e.type == SDL_QUIT) {
-				showVictoryScreen = false;
-			}
-
-			if (keyboardState[SDL_SCANCODE_SPACE]) {
-				showVictoryScreen = false;
-			}
-		}
-
-		Window::Clear();
-		drawWinScreen();
-		Window::Present();
-	}
-
-	while (showLossScreen)
-	{
-		while (SDL_PollEvent(&e))
-		{
-			// Update keyboardState
-			SDL_PumpEvents();
-
-			// If user closes the window
-			if (e.type == SDL_QUIT) {
-				showLossScreen = false;
-			}
-
-			if (keyboardState[SDL_SCANCODE_SPACE]) {
-				showLossScreen = false;
-			}
-		}
-
-		Window::Clear();
-		drawLossScreen();
-		Window::Present();
-	}
-
+void Game::endGame()
+{
 	Window::Clear();
 	Window::Quit();
+	exit(0);
+}
+
+
+/**
+Loads monsters from the map.
+*/
+void Game::loadEnemies(){
+	int** tempMap = map.getMap();
+
+	//Create the enemies
+	this->numberOfEnemies = 0;
+
+	for (int row = 0; row < map.getHeight(); row++) 
+	{
+		for (int col = 0; col < map.getWidth(); col++) 
+		{
+			if (tempMap[row][col] == ENEMY_DEMON)
+			{
+				Demon *newEnemy = new Demon(col * TILE_HEIGHT, row * TILE_HEIGHT);
+				enemies[numberOfEnemies] = newEnemy;
+				this->numberOfEnemies++;
+			}
+			if (tempMap[row][col] == ENEMY_COPTER) {
+				Copter *newEnemy = new Copter(col * TILE_HEIGHT, row * TILE_HEIGHT);
+				enemies[numberOfEnemies] = newEnemy;
+				this->numberOfEnemies++;
+			}
+		}
+	}
 }
 
 void Game::updatePlayer()
@@ -178,167 +186,22 @@ void Game::updatePlayer()
 		player.decelerateY();
 	}
 
-	movePlayer();
+	player.move(map, enemies, numberOfEnemies);
 	player.updateTexture();
-	getCollisionPoints(player.xPos, player.yPos, player.playerTextureWidth, player.playerTextureHeight, player.collisionPoints);
 }
 
-void Game::movePlayer()
-{
-	//Horizontal movement
-	if (player.moveState == MOVE_LEFT){
-		for (int i = 0; i < player.xVel; i++)
-		{
-			if (checkPlayerCollision(player.xPos - 1, player.yPos)){
-				break;
-			}
-
-			player.xPos--;
-		}
-	}
-	if (player.moveState == MOVE_RIGHT){
-		for (int i = 0; i < player.xVel; i++)
-		{
-			if (checkPlayerCollision(player.xPos + 1, player.yPos)){
-				break;
-			}
-
-			player.xPos++;
-		}
-	}
-
-	//Vertical movement
-	if (player.yVel > 0) {
-		for (int i = 0; i < GRAVITY; i++)
-		{
-			if (checkPlayerCollision(player.xPos, player.yPos - 1)){
-				player.decelerateY();
-				break;
-			}
-
-			player.yPos--;
-			player.yVel--;
-		}
-	}
-	else {
-		for (int i = player.yVel; i < 0; i++)
-		{
-			// If the player lands on something, he can jump again.
-			if (checkPlayerCollision(player.xPos, player.yPos + 1)){
-				player.inAir = false;
-				break;
-			}
-
-			player.yPos++;
-		}
-	}
-}
-
-/**
-	Loads monsters from the map.
-*/
-void Game::loadMonsters(){
-	int** tempMap = map.getMap();
-	int xMonsterCount = 0;
-	int yMonsterCount = 0;
-
-	// Count number of monsters in the map
-	for (int row = 0; row < map.getHeight(); row++) {
-		for (int col = 0; col < map.getWidth(); col++) {
-			if (tempMap[row][col] == MONSTER_FLYING) {
-				yMonsterCount++;
-			}
-			if (tempMap[row][col] == MONSTER_WALKING){
-				xMonsterCount++;
-			}
-		}
-	}
-
-	//Create the enemies
-	numberOfXMonsters = 0;
-	numberOfYMonsters = 0;
-	xMonsters = new xMonster[xMonsterCount];
-	yMonsters = new yMonster[yMonsterCount];
-
-	for (int row = 0; row < map.getHeight(); row++) {
-		for (int col = 0; col < map.getWidth(); col++) {
-			if (tempMap[row][col] == MONSTER_WALKING) {
-				xMonsters[numberOfXMonsters] = xMonster(col * TILE_WIDTH, row * TILE_HEIGHT);
-				numberOfXMonsters++;
-			}
-			if (tempMap[row][col] == MONSTER_FLYING) {
-				yMonsters[numberOfYMonsters] = yMonster(col * TILE_WIDTH + (33), row * TILE_HEIGHT);
-				numberOfYMonsters++;
-			}
-		}
-	}
-}
 
 /**
 	Update enemy positions.
 */
 void Game::updateEnemies()
 {
-	for (int monster = 0; monster < numberOfXMonsters; monster++){
-		xMonsters[monster].updateTexture();
-		xMonsters[monster] = moveWalking(xMonsters[monster]);
+	for (int enemy = 0; enemy < numberOfEnemies; enemy++)
+	{
+		Enemy *tempEnemy = enemies[enemy];
+		tempEnemy->updateTexture();
+		tempEnemy->move(map);
 	}
-
-	for (int monster = 0; monster < numberOfYMonsters; monster++){
-		yMonsters[monster].updateTexture();
-		yMonsters[monster] = moveFlying(yMonsters[monster]);
-	}
-}
-
-xMonster Game::moveWalking(xMonster m){
-	// Move right or left and turn around if walking into wall.
-	for (int movement = 0; movement < MONSTER_SPEED; movement++){
-		if (m.direction){ // Going right
-			if (checkMonsterCollision(m.xPos + 1, m.yPos, m.textureWidth, m.textureHeight)){
-				m.direction = !m.direction;
-				break;
-			}
-			m.xPos++;
-		}
-		else{ // Going left
-			if (checkMonsterCollision(m.xPos - 1, m.yPos, m.textureWidth, m.textureHeight)){
-				m.direction = !m.direction;
-				break;
-			}
-			m.xPos--;
-		}
-	}
-
-	// Make monster fall
-	for (int movement = 0; movement < GRAVITY; movement++){
-		if (checkMonsterCollision(m.xPos, m.yPos + 1, m.textureWidth, m.textureHeight)){
-			break;
-		}
-		m.yPos++;
-	}
-
-	return m;
-}
-
-yMonster Game::moveFlying(yMonster m){
-	// Move right or left and turn around if walking into wall.
-	for (int movement = 0; movement < MONSTER_SPEED; movement++){
-		if (m.goingUp){ // Going up
-			if (checkMonsterCollision(m.xPos, m.yPos - 1, m.textureWidth, m.textureHeight)){
-				m.goingUp = !m.goingUp;
-				break;
-			}
-			m.yPos--;
-		}
-		else{ // Going down
-			if (checkMonsterCollision(m.xPos, m.yPos + 1, m.textureWidth, m.textureHeight)){
-				m.goingUp = !m.goingUp;
-				break;
-			}
-			m.yPos++;
-		}
-	}
-	return m;
 }
 
 /**
@@ -380,7 +243,7 @@ void Game::drawLevel(){
 				pos.w = TILE_WIDTH;
 				pos.h = TILE_HEIGHT;
 
-				Window::Draw(bricks, pos);
+				Window::Draw(solidBlockTexture, pos);
 			}
 
 			// Draw the tile.
@@ -392,7 +255,7 @@ void Game::drawLevel(){
 				pos.w = TILE_WIDTH;
 				pos.h = TILE_HEIGHT;
 
-				Window::Draw(stoneBlock, pos);
+				Window::Draw(goalTexture, pos);
 			}
 		}
 	}
@@ -403,7 +266,7 @@ void Game::drawLevel(){
 */
 void Game::drawPlayer(){
 	// Player width and height
-	int pHeight = player.playerTextureHeight, pWidth = player.playerTextureWidth;
+	int pHeight = player.textureHeight, pWidth = player.textureWidth;
 
 	// Get player position in the map.
 	SDL_Rect pos;
@@ -423,122 +286,23 @@ void Game::drawPlayer(){
 /**
 	Draws enemies.
 */
-void Game::drawEnemies(){
-	for (int i = 0; i < numberOfXMonsters; i++){
-		SDL_RendererFlip flip = SDL_FLIP_NONE;
-		
-		if (xMonsters[i].direction){
-			flip = SDL_FLIP_HORIZONTAL;
-		}
-
-		SDL_Rect pos;
-		pos.x = xMonsters[i].xPos - (xMonsters[i].textureWidth / 2) - camPosX;
-		pos.y = xMonsters[i].yPos - (xMonsters[i].textureHeight / 2);
-		pos.w = xMonsters[i].textureWidth;
-		pos.h = xMonsters[i].textureHeight;
-		Window::Draw(xMonsters[i].monsterTexture, pos, &xMonsters[i].getCurrentClip(),
-			NULL, NULL, NULL, flip);
-	}
-
-	for (int i = 0; i < numberOfYMonsters; i++){
-		SDL_Rect pos;
-		pos.x = yMonsters[i].xPos - (yMonsters[i].textureWidth / 2) - camPosX;
-		pos.y = yMonsters[i].yPos - (yMonsters[i].textureHeight / 2);
-		pos.w = yMonsters[i].textureWidth;
-		pos.h = yMonsters[i].textureHeight;
-		Window::Draw(yMonsters[i].monsterTexture, pos, &yMonsters[i].getCurrentClip());
-	}
-}
-
-void Game::getCollisionPoints(int newXPos, int newYPos, int textureWidth, int textureHeight, SDL_Point* collisionPoints)
-{
-	// Calculate 9 collision points on the texture.
-	for (int i = 0; i < 9; i++)
+	void Game::drawEnemies()
 	{
-		SDL_Point point;
-		point.x = newXPos + ((i / 3) * (textureWidth / 2));
-		point.y = newYPos + ((i % 3) * (textureHeight / 2));
-
-		collisionPoints[i] = point;
-	}
-}
-
-bool Game::checkPlayerCollision(int newXPos, int newYPos){
-
-	SDL_Point tempCollisionPoints[9];
-	getCollisionPoints(newXPos, newYPos, player.playerTextureWidth, player.playerTextureHeight, tempCollisionPoints);
-
-	for (int i = 0; i < 9; i++){
-		SDL_Point tempPoint = tempCollisionPoints[i];
+		for (int i = 0; i < numberOfEnemies; i++)
+		{
+			SDL_RendererFlip flip = SDL_FLIP_NONE;
 		
-		for (int monster = 0; monster < numberOfXMonsters; monster++){
-			xMonster m = xMonsters[monster];
+			Enemy *tempEnemy = enemies[i];
+			if (tempEnemy->direction) flip = SDL_FLIP_HORIZONTAL;
 
-			if (tempPoint.x > m.xPos && tempPoint.x < m.xPos + m.textureWidth
-				&& tempPoint.y > m.yPos && tempPoint.y < m.yPos + m.textureHeight){
-				SDL_PushEvent(&lossEvent);
-			}
-		}
+			SDL_Rect pos;
+			pos.x = tempEnemy->xPos - (tempEnemy->width / 2) - camPosX;
+			pos.y = tempEnemy->yPos - (tempEnemy->height / 2);
+			pos.w = tempEnemy->width;
+			pos.h = tempEnemy->height;
+			SDL_Texture *tempTex = tempEnemy->texture;
+			SDL_Rect tempRect = tempEnemy->getCurrentClip();
 
-		int tile = map.getTile(tempPoint.x, tempPoint.y);
-		if (tile == TILE_SOLID){
-			return true;
-		}
-		if (tile == TILE_GOAL){
-			SDL_PushEvent(&winEvent);
+			Window::Draw(goalTexture, pos, &tempRect, NULL, NULL, NULL, flip);
 		}
 	}
-
-	return false;
-}
-
-bool Game::checkMonsterCollision(int newXPos, int newYPos, int textureWidth, int textureHeight){
-	SDL_Point tempCollisionPoints[9];
-	getCollisionPoints(newXPos, newYPos, textureWidth, textureHeight, tempCollisionPoints);
-	for (int i = 0; i < 9; i++){
-		SDL_Point tempPoint = tempCollisionPoints[i];
-
-		if (tempPoint.x > player.xPos && tempPoint.x < player.xPos + player.playerTextureWidth
-				&& tempPoint.y > player.yPos && tempPoint.y < player.yPos + player.playerTextureHeight){
-				SDL_PushEvent(&lossEvent);
-		}
-		
-		int tile = map.getTile(tempPoint.x, tempPoint.y);
-		if (tile == TILE_SOLID) return true;
-	}
-
-	return false;
-}
-
-/**
-	Draws a win screen when the player wins.
-*/
-void Game::drawWinScreen(){
-	SDL_Color white = { 255, 255, 255 };
-	SDL_Texture *msgGrats;
-	SDL_Rect msgGratsBox;
-
-	msgGrats = Window::RenderText("You have completed the level!", "Textures/FreeSans.ttf", white, 50);
-
-	SDL_QueryTexture(msgGrats, NULL, NULL, &msgGratsBox.w, &msgGratsBox.h);
-
-	msgGratsBox.x = (Window::Box().w / 2) - (msgGratsBox.w / 2);
-	msgGratsBox.y = (Window::Box().h / 2) - (msgGratsBox.h / 2) - 25;
-
-	Window::Draw(msgGrats, msgGratsBox);
-}
-
-void Game::drawLossScreen(){
-	SDL_Color white = { 255, 255, 255 };
-	SDL_Texture *msgGrats;
-	SDL_Rect msgGratsBox;
-
-	msgGrats = Window::RenderText("You have died!", "Textures/FreeSans.ttf", white, 50);
-
-	SDL_QueryTexture(msgGrats, NULL, NULL, &msgGratsBox.w, &msgGratsBox.h);
-
-	msgGratsBox.x = (Window::Box().w / 2) - (msgGratsBox.w / 2);
-	msgGratsBox.y = (Window::Box().h / 2) - (msgGratsBox.h / 2) - 25;
-
-	Window::Draw(msgGrats, msgGratsBox);
-}
