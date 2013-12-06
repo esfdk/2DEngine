@@ -15,11 +15,6 @@ public:
 	~Enemy(){};
 
 	/**
-	* The path to the texture to use for the enemy.
-	*/
-	string texturePath = "";
-
-	/**
 	* True for right, false for left.
 	*/
 	bool direction;
@@ -68,7 +63,7 @@ protected:
 	/**
 	* The animation clips.
 	*/
-	SDL_Rect animationClips[4];
+	SDL_Rect animationClips[MAX_ANIMATION_CLIPS];
 
 	/**
 	* Clip counters to show the correct animation.

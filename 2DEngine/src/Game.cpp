@@ -164,6 +164,7 @@ void Game::loadEnemies(){
 			{
 				Demon *newEnemy = new Demon(col * TILE_HEIGHT, row * TILE_HEIGHT);
 				enemies[numberOfEnemies] = newEnemy;
+				printf("%d \n", enemies[numberOfEnemies]->textureHeight);
 				this->numberOfEnemies++;
 			}
 			if (tempMap[row][col] == ENEMY_COPTER) {
@@ -296,13 +297,14 @@ void Game::drawPlayer(){
 			if (tempEnemy->direction) flip = SDL_FLIP_HORIZONTAL;
 
 			SDL_Rect pos;
-			pos.x = tempEnemy->xPos - (tempEnemy->width / 2) - camPosX;
-			pos.y = tempEnemy->yPos - (tempEnemy->height / 2);
-			pos.w = tempEnemy->width;
-			pos.h = tempEnemy->height;
+			pos.x = tempEnemy->xPos - (tempEnemy->textureWidth / 2) - camPosX;
+			pos.y = tempEnemy->yPos - (tempEnemy->textureHeight / 2);
+			pos.w = tempEnemy->textureWidth;
+			pos.h = tempEnemy->textureHeight;
 			SDL_Texture *tempTex = tempEnemy->texture;
 			SDL_Rect tempRect = tempEnemy->getCurrentClip();
+			
 
-			Window::Draw(goalTexture, pos, &tempRect, NULL, NULL, NULL, flip);
+			Window::Draw(tempEnemy->texture, pos, &tempRect, NULL, NULL, NULL, flip);
 		}
 	}

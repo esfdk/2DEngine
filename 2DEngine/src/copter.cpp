@@ -6,18 +6,23 @@ Copter::Copter(int x, int y){
 	xPos = x;
 	yPos = y;
 
-	texture = Window::LoadImage(texturePath);
+	texture = Window::LoadImage("Textures/Copter.png");
 	direction = false;
+
+	textureHeight = 64;
+	textureWidth = 66;
+	speed = 5;
+	animationClipAmount = 2;
 
 	currentClip = 0;
 
 	// Creates the clips for the monster animation
 	for (int i = 0; i < animationClipAmount; i++)
 	{
-		animationRunClips[i].x = i * textureWidth;
-		animationRunClips[i].y = 0;
-		animationRunClips[i].h = textureHeight;
-		animationRunClips[i].w = textureWidth;
+		animationClips[i].x = i * textureWidth;
+		animationClips[i].y = 0;
+		animationClips[i].h = textureHeight;
+		animationClips[i].w = textureWidth;
 	}
 
 	height = textureHeight - 2;

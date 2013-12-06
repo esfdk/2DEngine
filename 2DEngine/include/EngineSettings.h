@@ -30,6 +30,8 @@ public:
 	* Max amount of enemies
 	*/
 	#define MAX_AMOUNT_OF_ENEMIES 100
+
+	#define MAX_ANIMATION_CLIPS 13
 	/**
 	* Gravity (how much characters fall (in pixels) per game loop).
 	*/

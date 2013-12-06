@@ -7,16 +7,6 @@
 
 class Copter : public Enemy{
 public:
-	/**
-	* The path to the texture to use for the enemy.
-	*/
-	string texturePath = "Textures/Copter.png";
-
-	/**
-	* Specific settings for this enemy
-	*/
-	int textureHeight = 64, textureWidth = 66, animationClipAmount = 2, speed = 5;
-
 	Copter();
 	/**
 	@param x x position of the enemy.
@@ -34,15 +24,5 @@ public:
 	Updates the texture of the enemy.
 	*/
 	virtual void updateTexture();
-private:
-	/**
-	The clips for the running animation.
-	*/
-	SDL_Rect animationRunClips[2];
-
-	/**
-	Clip counters to show the correct animation.
-	*/
-	int internalClipCounter, currentClip;
 };
 #endif

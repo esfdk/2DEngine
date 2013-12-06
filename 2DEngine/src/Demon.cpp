@@ -6,10 +6,13 @@ Demon::Demon(int x, int y)
 {
 	xPos = x;
 	yPos = y;
-	texture = Window::LoadImage(texturePath);
+	texture = Window::LoadImage("Textures/Demon.png");
 	direction = false;
 
-	printf("%d \n", textureWidth);
+	textureHeight = 64;
+	textureWidth = 79;
+	speed = 5;
+	animationClipAmount = 13;
 
 	currentClip = 0;
 

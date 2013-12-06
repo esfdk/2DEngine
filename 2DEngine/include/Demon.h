@@ -6,16 +6,6 @@
 
 class Demon : public Enemy{
 public:
-	/**
-	* The path to the texture to use for the enemy.
-	*/
-	string texturePath = "Textures/Demon.png";
-
-	/**
-	* Specific settings for this enemy
-	*/
-	int textureHeight = 64, textureWidth = 79, animationClipAmount = 13, speed = 5;
-
 	Demon();
 	/**
 		@param x x position of the enemy.
@@ -33,15 +23,5 @@ public:
 		Updates the texture of the enemy.
 	*/
 	virtual void updateTexture();
-private:
-	/**
-	* The clips for the running animation.
-	*/
-	SDL_Rect animationClips[13];
-	
-	/**
-		Clip counters to show the correct animation.
-	*/
-	int internalClipCounter, currentClip;
 };
 #endif
