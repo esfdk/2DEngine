@@ -1,5 +1,9 @@
 \section{How To Use}
 
-\subsection{Features}
-
-\subsection{Extending/changing the engine}
+\subsection{Making levels}
+Currently the engine loads the "Level0.txt" file in the "levels" folder as the level for the game. First two lines describes the height and length of the level, respectively. The rest of the document desribes the layout of the level.
+\\I have included an example of the format for the level file.
+\subsection{Adding new enemies}
+Adding additional enemies to the game (engine) requires inheriting from the Enemy class and overriding the constructor, updateTexture and move functions. The engine currently supports 6 enemy types.
+\\I have included two examples of enemies (Demon and Copter) in my example game.
+\subsection{Extending the engine}
