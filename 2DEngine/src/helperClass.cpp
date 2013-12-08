@@ -22,7 +22,7 @@ void HelperClass::drawWinScreen(){
 	SDL_Texture *msgGrats;
 	SDL_Rect msgGratsBox;
 
-	msgGrats = Window::RenderText("You have completed the level!", "Textures/FreeSans.ttf", white, 50);
+	msgGrats = Window::RenderText(WIN_TEXT, "Textures/FreeSans.ttf", white, 50);
 
 	SDL_QueryTexture(msgGrats, NULL, NULL, &msgGratsBox.w, &msgGratsBox.h);
 
@@ -37,7 +37,7 @@ void HelperClass::drawLossScreen(){
 	SDL_Texture *msgGrats;
 	SDL_Rect msgGratsBox;
 
-	msgGrats = Window::RenderText("You have died!", "Textures/FreeSans.ttf", white, 50);
+	msgGrats = Window::RenderText(LOSS_TEXT, "Textures/FreeSans.ttf", white, 50);
 
 	SDL_QueryTexture(msgGrats, NULL, NULL, &msgGratsBox.w, &msgGratsBox.h);
 

@@ -77,36 +77,36 @@ void Game::gameLoop(){
 			horizontalKeyPressed = 0;
 			verticalKeyPressed = 0;
 
-			if (keyboardState[SDL_SCANCODE_ESCAPE])
+			if (keyboardState[QUIT_GAME_KEY_SCANCODE])
 			{
 				quit = true;
 			}
 
 			if (showVictoryScreen || showLossScreen)
 			{
-				if (keyboardState[SDL_SCANCODE_SPACE])
+				if (keyboardState[SKIP_ENDSCREEN_KEY_SCANCODE])
 				{
 					endGame();
 				}
 			}
 			else
 			{
-				if (keyboardState[SDL_SCANCODE_D])
+				if (keyboardState[WALK_RIGHT_KEY_SCANCODE])
 				{
 					player.accelerateX();
 					player.moveState = MOVE_RIGHT;
-					horizontalKeyPressed = SDLK_d;
+					horizontalKeyPressed = WALK_RIGHT_KEY;
 				}
-				if (keyboardState[SDL_SCANCODE_A])
+				if (keyboardState[WALK_LEFT_KEY_SCANCODE])
 				{
 					player.accelerateX();
 					player.moveState = MOVE_LEFT;
-					horizontalKeyPressed = SDLK_a;
+					horizontalKeyPressed = WALK_LEFT_KEY;
 				}
-				if (keyboardState[SDL_SCANCODE_W])
+				if (keyboardState[JUMP_KEY_SCANCODE])
 				{
 					player.accelerateY();
-					verticalKeyPressed = SDLK_w;
+					verticalKeyPressed = JUMP_KEY;
 				}
 			}
 		}
@@ -164,7 +164,6 @@ void Game::loadEnemies(){
 			{
 				Demon *newEnemy = new Demon(col * TILE_HEIGHT, row * TILE_HEIGHT);
 				enemies[numberOfEnemies] = newEnemy;
-				printf("%d \n", enemies[numberOfEnemies]->textureHeight);
 				this->numberOfEnemies++;
 			}
 			if (tempMap[row][col] == ENEMY_COPTER) {

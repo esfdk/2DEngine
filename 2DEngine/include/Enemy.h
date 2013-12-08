@@ -5,6 +5,7 @@
 #include "../include/Map.h"
 #include "../include/Window.h"
 #include "../include/EngineSettings.h"
+#include "../include/helperClass.h"
 
 /**
 * An enemy.

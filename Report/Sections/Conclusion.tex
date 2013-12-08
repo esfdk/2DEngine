@@ -1,3 +1,13 @@
 \section{Conclusion}
+The engine successfully implements the required features of the project. There is support for side-scrolling, standard 2D-platformer physics collision detection, sprite animation and is based on a game loop and events (for win/loss conditions).
+
+The main problems of the game engine is the lack of a fixed time step and the support of only a single level. Additionally, the game engine uses a very poor map loading algorithm and level file format making for very limited variety in levels and enemies.
 
 \subsection{Future work}
+As I mentioned in section \ref{overview_extending}, there are a few ways to improve/extend the game engine. In this section I discuss the two I would focus on if I were to improve the engine.
+\paragraph{Fixed time step}
+As discussed in section \ref{overview_timestep}, there is some merit to using a fixed time step in a 2D-platformer game. Implementing a fixed time step would require a rewrite of the movement and updating of textures. If I were to implement it, I would implement it in such a way, that there would be support for choosing either a fixed or a variable time step.
+\paragraph{More levels}
+Changing the engine to support more than one level would make it easier for game developers to create an actual full-length game. Currently this can be done by making different game clients for each level, but this is not very desirable.
+\paragraph{Better level format}
+Using the current format to describe a level, there can only be 10 different values. Implementing a better map loading algorithm and a better level file format would be obvious points to improve. This would allow for more varied levels.

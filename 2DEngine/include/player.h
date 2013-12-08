@@ -11,19 +11,6 @@
 */
 class Player{
 public:
-	#pragma region Player variables
-	//Textures
-	#define PLAYER_STAND_TEXTURE "Textures/PlayerStandLeft.png"
-	#define PLAYER_JUMP_TEXTURE "Textures/PlayerJump.png"
-	#define PLAYER_RUN_TEXTURE "Textures/PlayerRunning.png"
-	#define PLAYER_RUN_CLIP_COUNT 10
-
-	/**
-		The speed the player moves with.
-	*/
-	#define PLAYER_SPEED 7
-	#pragma endregion
-
 #pragma region Constructors
 	/**
 		Starts player at x = 300, y = 300.

@@ -6,16 +6,18 @@ The required features of the engine were:
 \begin{my_itemize}
 \item Side scrolling
 \item 2D platformer physics (walking, jumping, falling)
-\item Collision detection (eg. between player and enemy)
-\item Sprite animations based on state (walking vs standing)
+\item Collision detection (e.g. between player and enemy)
+\item Sprite animations based on state (walking vs. standing)
 \item Architecture based on game loop and events
 \end{my_itemize}
 
 In addition to the required features of the engine, I have implemented animation of walking for the player and enemies.
 
 My implementation supports a game consisting of a single level. The y-position of the camera is fixed, so while the engine supports "tall" levels, the camera will not show the player or anything outside the "standard" level height.
-\\The engine supports 1 texture for "solid" game tiles, 1 goal tile and up to 6 different types of enemies (two example enemies are included).
+\\The engine supports 1 texture for "solid" game tiles, 1 texture for goal tile(s) and up to 6 different types of enemies (two example enemies are included).
 
-The game engine is implemented in C++ for Windows using the SDL 2.0 framework\footnote{http://www.libsdl.org/hg.php - SDL\_image and SDL\_ttf libraries were also used.}
+The engine uses a variable time step, so the speed of the game can vary depending on hardware. I discuss this in more detail in section \ref{overview_timestep} on page \pageref{overview_timestep}.
+
+The game engine is implemented in C++ for Windows using the SDL 2.0 framework\footnote{http://www.libsdl.org/hg.php - SDL\_image and SDL\_ttf libraries were also used.}.
 
 I have worked with Jacob Grooss (jcgr@itu.dk) on parts of this project (mainly the design, but also parts of the implementation).

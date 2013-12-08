@@ -5,6 +5,7 @@
 #include <stdexcept>
 #include <memory>
 #include <SDL.h>
+#include "../include/EngineSettings.h"
 
 /**
 *  Window management class, provides a simple wrapper around
@@ -13,9 +14,6 @@
 */
 class Window {
 public:
-	#define WINDOW_HEIGHT 768
-	#define WINDOW_WIDTH 1280
-
     //The constructor and destructor don't actually do anything as 
     //the class is pure static
     Window();

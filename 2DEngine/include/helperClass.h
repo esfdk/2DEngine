@@ -3,7 +3,7 @@
 
 #include <SDL.h>
 #include "../include/window.h"
-#endif
+#include "../include/EngineSettings.h"
 class HelperClass {
 public:
 	//Win/loss events
@@ -18,6 +18,9 @@ public:
 	#define MOVE_LEFT 2
 	#define MOVE_RIGHT 3
 
+	// Amount of collision points for characters
+	#define COLLISION_POINT_AMOUNT 9
+
 	/**
 	* Updates the array of collision points based on the arguments.
 	*/
@@ -31,3 +34,4 @@ public:
 	*/
 	static void drawLossScreen();
 };
+#endif

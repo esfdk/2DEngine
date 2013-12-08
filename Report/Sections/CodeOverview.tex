@@ -1,1 +1,23 @@
 \section{Overview of the Engine}
+The general architecture of the engine is based on the \textit{Game} class. It contains the game loop, a list of enemies, the player  and the level. The \textit{Game} class is also responsible for figuring out what to draw on the screen.
+\\The \textit{Map} class is responsible for keeping track of the map layout and loading the map. The \textit{Enemy} and \textit{Player} classes are responsible for keeping track of their own position and animation as well as moving their position.
+\\The \textit{Window}\footnote{Source: https://github.com/Twinklebear/TwinklebearDev-Lessons/blob/master/Lesson8/src/window.cpp} class is responsible for actually creating a window and drawing the textures.
+
+\subsection{Variable time step}
+\label{overview_timestep}
+I have not implemented a fixed time step in my engine. This means the game speed heavily depends on the performance of the hardware the engine is run on. Very limited processing power would significantly slow down the games made on the engine and provide a very different experience compared to using the engine on a powerful machine. The problem with a fixed time step is that on a slow computer, the fixed time step could give the experience of "frame skips", where parts of the game is skipped.
+\\Implementing a fixed time step would require keeping track of a global variable to keep track of time since last frame and then multiplying the speed of the game characters by this value for every game loop. If a game loop finishes before the time to next frame is finished, then just wait until this time has passed.
+
+\subsection{Extending the engine}
+\label{overview_extending}
+In this section I discuss ways to expand the functionality of the engine.
+\paragraph{More levels}
+To support more than one level, the \textit{Game} class would need to be changed. Instead of quitting the game on completing a level, a different map should be loaded, new memory allocated  for the list of monsters and a new player object created.
+\paragraph{Controls}
+Changing the control scheme is simply changing the values in the \textit{EngineSettings} header. Expanding the control scheme would require a change to the main game loop, so that the new controls would be registered.
+\paragraph{More tile/enemy types}
+The current map format only supports 10 tile types. To allow for more varied levels, the format would need to be changed to support more integer. A possible format could be "01,01,02" to indicate [solidTile], [solidTile], [goalTile] instead of just 112.
+\paragraph{Events}
+Implementing custom events to the engine could be done by expanding the number of \textit{SDL\_Event}s in the \textit{HelperClass} header and then expanding the main game loop to check for these custom events.
+\paragraph{Collectibles}
+If the map format was expanded, the game could support collectible items (e.g. power-ups) by having the collectibles be a tile type and throwing a custom event upon player collision with the tile.

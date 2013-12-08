@@ -1,9 +1,9 @@
 \section{How To Use}
+Most of the changeable values for the game are placed in the \textit{EngineSettings} header. These settings include game name, window size, controls, player/tile textures names, player speed, game gravity and the maximum possible number of enemies in the game\footnote{These settings could be defined in a text file and loaded at runtime instead of being defined at compile time.}.
 
 \subsection{Making levels}
-Currently the engine loads the "Level0.txt" file in the "levels" folder as the level for the game. First two lines describes the height and length of the level, respectively. The rest of the document desribes the layout of the level.
-\\I have included an example of the format for the level file.
+Currently the engine loads the "Level0.txt" file in the "levels" folder as the level for the game. First two lines describes the height and length of the level, respectively. The rest of the document describes the layout of the level.
+\\The "levels" folder included with the example game contains an example of the formatting for the level files.
 \subsection{Adding new enemies}
-Adding additional enemies to the game (engine) requires inheriting from the Enemy class and overriding the constructor, updateTexture and move functions. The engine currently supports 6 enemy types.
-\\I have included two examples of enemies (Demon and Copter) in my example game.
-\subsection{Extending the engine}
+Adding additional enemies to the game (engine) requires inheriting from the \textit{Enemy} class and overriding the constructor, \textit{updateTexture} and \textit{move} functions. In addition, the \textit{loadEnemies()} function in \textit{game} must have an if-clause added to include the new enemy type. \textit{enemyTypes.h} is used to define the different values for the enemy types\footnote{This could be moved to the \textit{enemy} header file instead}. The engine currently supports up to 6 different enemy types. 
+\\My example game contains two enemies. A Demon that runs horizontally in the level and a Copter that flies vertically in the level.
